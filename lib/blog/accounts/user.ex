@@ -15,13 +15,19 @@ defmodule Blog.Accounts.User do
   end
 
   @doc false
-  def changeset(user, attrs) do
+  def changeset(user, %{password: password} = attrs) when is_binary(password) do
     new_attrs =
       attrs
-      |> Map.put(:password_hash, Bcrypt.hash_pwd_salt(attrs.password))
+      |> Map.put(:password_hash, Bcrypt.hash_pwd_salt(password))
 
     user
     |> cast(new_attrs, [:username, :password_hash])
+    |> validate_required([:username, :password_hash])
+  end
+
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:username, :password_hash])
     |> validate_required([:username, :password_hash])
   end
 

@@ -9,7 +9,9 @@ defmodule Blog.Accounts do
   alias Blog.Accounts.{User, Contact}
 
   def list_users do
-    Repo.all(User)
+    User
+    |> Repo.all()
+    |> Repo.preload(:contacts)
   end
 
   def get_user!(user_id) do
@@ -25,6 +27,8 @@ defmodule Blog.Accounts do
       with {:ok, user} <- create_simple_user(user_attrs),
            {:ok, contact} <- create_contact(user, contact_attrs) do
         %{user | contacts: [contact]}
+      else
+        error -> error
       end
     end)
   end
@@ -39,12 +43,6 @@ defmodule Blog.Accounts do
       when is_binary(username) and is_binary(password) do
     user = Repo.get_by(User, username: username)
     if User.valid_password?(user, password), do: user
-  end
-
-  def update_user(%User{} = user, attrs) do
-    user
-    |> User.changeset(attrs)
-    |> Repo.update()
   end
 
   def delete_user(%User{} = user) do
