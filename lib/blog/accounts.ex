@@ -51,18 +51,10 @@ defmodule Blog.Accounts do
     Repo.delete(user)
   end
 
-  def change_user(%User{} = user, attrs \\ %{}) do
-    User.changeset(user, attrs)
-  end
-
   def create_contact(user, attrs) do
     user
     |> Ecto.build_assoc(:contacts)
     |> Contact.changeset(attrs)
     |> Repo.insert()
-  end
-
-  def change_contact(%Contact{} = contact, attrs \\ %{}) do
-    Contact.changeset(contact, attrs)
   end
 end

@@ -14,16 +14,12 @@ defmodule Blog.Content do
     |> Repo.preload(:author)
   end
 
-  def list_posts(author, args) do
-    IO.inspect(author)
-    IO.inspect(args)
-  end
-
   def get_post!(id), do: Repo.get!(Post, id)
 
   def get_my_posts(user_id) do
     from(p in Post, where: p.author_id == ^user_id)
     |> Repo.all()
+    |> Repo.preload(:author)
   end
 
   def create_post(user, attrs \\ %{}) do
