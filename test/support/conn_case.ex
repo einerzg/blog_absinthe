@@ -16,6 +16,7 @@ defmodule BlogWeb.ConnCase do
   """
 
   use ExUnit.CaseTemplate
+  @endpoint BlogWeb.Endpoint
 
   using do
     quote do
@@ -34,5 +35,31 @@ defmodule BlogWeb.ConnCase do
   setup tags do
     Blog.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
+
+  @doc """
+  Runs a GraphQL query and checks if there are any errors in the response, returning just the data
+  in these cases.
+  """
+  def run_graphql(conn, query_or_mutation, variables \\ %{}) do
+    import Phoenix.ConnTest
+
+    conn
+    |> post("/api", %{"query" => query_or_mutation, "variables" => variables})
+    |> json_response(200)
+    |> case do
+      %{"errors" => errors} = response ->
+        {:error, Enum.map(errors, &Map.delete(&1, "locations")), response["data"]}
+
+      response ->
+        {:ok, response["data"]}
+    end
+  end
+
+  @doc """
+  Adds authentication headers to the given Plug.Conn.
+  """
+  def authenticated(conn, user_id) do
+    Plug.Conn.put_req_header(conn, "authorization", "Bearer #{BlogWeb.AuthToken.create(user_id)}")
   end
 end

@@ -29,7 +29,7 @@ config :blog, BlogWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :blog, Blog.Mailer, adapter: Swoosh.Adapters.Local
+# config :blog, Blog.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configures Elixir's Logger
 config :logger, :console,
